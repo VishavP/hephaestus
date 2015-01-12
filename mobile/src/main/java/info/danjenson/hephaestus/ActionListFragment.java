@@ -23,7 +23,6 @@ public class ActionListFragment extends ListFragment {
         mActions = ActionCenter.get(getActivity()).getActions();
         ActionAdapter adapter = new ActionAdapter(mActions);
         setListAdapter(adapter);
-        setRetainInstance(true);
     }
 
     @Override

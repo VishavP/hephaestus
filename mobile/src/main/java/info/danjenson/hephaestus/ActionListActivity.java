@@ -7,5 +7,5 @@ public class ActionListActivity extends SingleFragmentActivity {
 
     @Override
     protected Fragment createFragment() { return new ActionListFragment(); }
-}
+    }
 

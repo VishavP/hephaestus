@@ -28,4 +28,8 @@ public class Action {
         mName = name;
         mCommand = command;
     }
+
+    public String toString() {
+        return mName + ": " + mCommand;
+    }
 }

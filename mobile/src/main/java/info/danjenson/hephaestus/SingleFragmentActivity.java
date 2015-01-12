@@ -12,7 +12,7 @@ public abstract class SingleFragmentActivity extends ActionBarActivity {
     protected abstract Fragment createFragment();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment);
         FragmentManager fm = getFragmentManager();
