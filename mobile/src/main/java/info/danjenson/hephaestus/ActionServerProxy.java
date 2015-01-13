@@ -1,5 +1,7 @@
 package info.danjenson.hephaestus;
 
+import android.util.Log;
+
 /**
  * Created by danj on 1/12/15.
  */
@@ -59,4 +61,8 @@ public class ActionServerProxy {
         mMacAddress = macAddress;
     }
 
+    public String toString() {
+        return "HostName: " + mHostName + ", RemoteIP: " + mRemoteIpAddress +
+               ", LocalIP: " + mLocalIpAddress + ", Port: " + mPort + ", Mac: " + mMacAddress;
+    }
 }

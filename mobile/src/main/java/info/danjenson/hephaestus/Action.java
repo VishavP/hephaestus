@@ -1,5 +1,7 @@
 package info.danjenson.hephaestus;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 /**
@@ -38,9 +40,14 @@ public class Action {
         mName = name;
         mCommand = command;
         mAllowedHosts = allowedHosts;
+        Log.d("ACTION", this.toString());
     }
 
     public String toString() {
-        return mName + ": " + mCommand;
+        return mName + ": " + mCommand + ", Allowed on: " + mAllowedHosts.toString();
+    }
+
+    public int compareTo(Action a) {
+        return this.getName().compareTo(a.getName());
     }
 }
