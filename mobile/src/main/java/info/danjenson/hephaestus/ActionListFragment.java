@@ -1,13 +1,13 @@
 package info.danjenson.hephaestus;
 
+import android.app.AlertDialog;
 import android.app.ListFragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,28 +37,30 @@ public class ActionListFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        Action a = ((ActionAdapter) getListAdapter()).getItem(position);
-        String name = null;
+        final Action a = ((ActionAdapter) getListAdapter()).getItem(position);
+        String hostname = null;
         if (a.getAllowedHosts().size() > 1) {
-            // show popup menu
-        } {
-            name = a.getName();
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Host");
+            ArrayList<String> allowedHosts = a.getAllowedHosts();
+            final String[] options = allowedHosts.toArray(new String[allowedHosts.size()]);
+            builder.setItems(options, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    submitPostRequest(options[which], a);
+                }
+            });
+            builder.show();
+        } else {
+            hostname = a.getAllowedHosts().get(0);
+            submitPostRequest(hostname, a);
         }
-        Toast toast = Toast.makeText(getActivity(), "Executing: " + name, Toast.LENGTH_LONG);
-        toast.show();
+    }
+
+    public void submitPostRequest(String hostname, Action a) {
         // TODO: SUBMIT POST REQUEST
-    }
-
-    public void showMenu(View v, Action a) {
-        PopupMenu popup = new PopupMenu(getActivity(), v);
-        popup.setOnMenuItemClickListener(this);
-    }
-
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-       switch (item.getItemId()) {
-       }
-       return true;
+        Toast toast = Toast.makeText(getActivity(), hostname + ": " + a.getName(), Toast.LENGTH_LONG);
+        toast.show();
     }
 
     private class ActionAdapter extends ArrayAdapter<Action> {
