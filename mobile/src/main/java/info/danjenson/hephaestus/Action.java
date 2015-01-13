@@ -1,9 +1,14 @@
 package info.danjenson.hephaestus;
 
+import java.util.ArrayList;
+
 /**
  * Created by danj on 1/12/15.
  */
 public class Action {
+    private String mName;
+    private String mCommand;
+    private ArrayList<String> mAllowedHosts;
 
     public String getName() {
         return mName;
@@ -21,12 +26,18 @@ public class Action {
         this.mCommand = mCommand;
     }
 
-    private String mName;
-    private String mCommand;
+    public ArrayList<String> getAllowedHosts() {
+        return mAllowedHosts;
+    }
 
-    public Action(String name, String command) {
+    public void setAllowedHosts(ArrayList<String> allowedHosts) {
+        mAllowedHosts = allowedHosts;
+    }
+
+    public Action(String name, String command, ArrayList<String> allowedHosts) {
         mName = name;
         mCommand = command;
+        mAllowedHosts = allowedHosts;
     }
 
     public String toString() {

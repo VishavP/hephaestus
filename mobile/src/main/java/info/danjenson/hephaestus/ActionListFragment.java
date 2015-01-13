@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -20,7 +21,7 @@ public class ActionListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActions = ActionCenter.get(getActivity()).getActions();
+        mActions = ActionServerProxyManager.get(getActivity()).getActions();
         ActionAdapter adapter = new ActionAdapter(mActions);
         setListAdapter(adapter);
     }
@@ -28,6 +29,8 @@ public class ActionListFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         Action a = ((ActionAdapter) getListAdapter()).getItem(position);
+        Toast toast = Toast.makeText(getActivity(), "Executing: " + a.getName(), Toast.LENGTH_LONG);
+        toast.show();
         // TODO: POST REQUEST
     }
 
