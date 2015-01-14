@@ -19,12 +19,13 @@ import java.util.Comparator;
  */
 public class ActionListFragment extends ListFragment {
     private ArrayList<Action> mActions;
-
+    private ActionServerProxyManager mActionServerProxyManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActions = ActionServerProxyManager.get(getActivity()).getActions();
+        mActionServerProxyManager = ActionServerProxyManager.get(getActivity());
+        mActions = mActionServerProxyManager.getActions();
         ActionAdapter adapter = new ActionAdapter(mActions);
         adapter.sort(new Comparator<Action>() {
             @Override
@@ -47,20 +48,20 @@ public class ActionListFragment extends ListFragment {
             builder.setItems(options, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    submitPostRequest(options[which], a);
+                    executePostRequest(options[which], a);
                 }
             });
             builder.show();
         } else {
             hostname = a.getAllowedHosts().get(0);
-            submitPostRequest(hostname, a);
+            executePostRequest(hostname, a);
         }
     }
 
-    public void submitPostRequest(String hostname, Action a) {
-        // TODO: SUBMIT POST REQUEST
-        Toast toast = Toast.makeText(getActivity(), hostname + ": " + a.getName(), Toast.LENGTH_LONG);
+    private void executePostRequest(String hostname, Action a) {
+        Toast toast = Toast.makeText(getActivity(), hostname + ": " + a.getName(), Toast.LENGTH_SHORT);
         toast.show();
+        mActionServerProxyManager.executePostRequest(hostname, a);
     }
 
     private class ActionAdapter extends ArrayAdapter<Action> {
