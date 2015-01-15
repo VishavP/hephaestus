@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Hephaestus</string>
-    <string name="hello_round">Hello Round World!</string>
-    <string name="hello_square">Hello Square World!</string>
+    <string name="app_short_name">H</string>
+    <string name="test">test</string>
 
 </resources>
