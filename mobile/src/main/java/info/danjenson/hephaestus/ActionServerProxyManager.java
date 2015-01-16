@@ -3,8 +3,6 @@ package info.danjenson.hephaestus;
 import android.content.Context;
 import android.os.Environment;
 
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +11,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -140,21 +137,13 @@ public class ActionServerProxyManager {
         return null;
     }
 
-    public void executePostRequest(String hostname, final Action a) {
-        for (ActionServerProxy asp : mActionServerProxies) {
-            if (asp.getHostName().equals(hostname)) {
-                try {
-                    HttpPost httpPost = new HttpPost("http://" + asp.getRemoteIpAddress() + ':' + asp.getPort());
-                    String s = "<?xml version='1.0'?><methodCall><methodName>" + a.getName() + "</methodName></methodCall>";
-                    StringEntity se = new StringEntity(s, "UTF-8");
-                    se.setContentType("application/xml");
-                    httpPost.setEntity(se);
-                    new AsyncPostRequest(mAppContext).execute(httpPost);
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+    public ActionServerProxy getActionServerProxy(String hostname) {
+       for (ActionServerProxy asp : mActionServerProxies) {
+           if (asp.getHostName().equals(hostname)) {
+               return asp;
+           }
+       }
+       return null;
     }
 
 }

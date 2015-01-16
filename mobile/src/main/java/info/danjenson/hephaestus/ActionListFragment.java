@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -48,20 +47,14 @@ public class ActionListFragment extends ListFragment {
             builder.setItems(options, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    executePostRequest(options[which], a);
+                    AsyncPostRequest.sendPostRequest(options[which], a.getName());
                 }
             });
             builder.show();
         } else {
             hostname = a.getAllowedHosts().get(0);
-            executePostRequest(hostname, a);
+            AsyncPostRequest.sendPostRequest(hostname, a.getName());
         }
-    }
-
-    private void executePostRequest(String hostname, Action a) {
-        Toast toast = Toast.makeText(getActivity(), hostname + ": " + a.getName(), Toast.LENGTH_SHORT);
-        toast.show();
-        mActionServerProxyManager.executePostRequest(hostname, a);
     }
 
     private class ActionAdapter extends ArrayAdapter<Action> {

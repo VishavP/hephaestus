@@ -2,21 +2,36 @@ package info.danjenson.hephaestus;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
-import android.widget.TextView;
+import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.MessageApi;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.NodeApi;
+import com.google.android.gms.wearable.Wearable;
+
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 public class VoiceAction extends Activity {
     private static final int SPEECH_REQUEST_CODE = 0;
     private static final List<String> exitWords = Arrays.asList("close", "quit", "exit");
+    private static GoogleApiClient mGoogleApiClient;
+    private HashSet<String> mConnectedNodeIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Wearable.API)
+                .build();
+        mConnectedNodeIds = new HashSet<String>();
+        new NodeManager().execute();
         startVoiceAction();
     }
 
@@ -33,14 +48,48 @@ public class VoiceAction extends Activity {
             List<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             String spokenText = results.get(0);
             if (exitWords.contains(spokenText)) {
-                setResult(RESULT_OK);
-                finish();
+                exit();
+            } else if (mConnectedNodeIds.size() > 0) {
+                for (String nodeId : mConnectedNodeIds) {
+                    MessageApi.SendMessageResult result = Wearable.MessageApi.sendMessage(
+                            mGoogleApiClient, nodeId, spokenText, null).await();
+                    if (!result.getStatus().isSuccess()) {
+                        Log.e("ERROR", "Failed to send message!");
+                    }
+                    Toast toast = Toast.makeText(this, spokenText, Toast.LENGTH_SHORT);
+                    toast.show();
+                    startVoiceAction();
+                }
             } else {
-                Toast toast = Toast.makeText(this, spokenText, Toast.LENGTH_SHORT);
+                Toast toast = Toast.makeText(this, "No connected nodes!", Toast.LENGTH_SHORT);
                 toast.show();
-                startVoiceAction();
+                exit();
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private class NodeManager extends AsyncTask<Void, Void, HashSet<String>> {
+
+        @Override
+        protected HashSet<String> doInBackground(Void... voids) {
+            HashSet<String> results = new HashSet<String>();
+            NodeApi.GetConnectedNodesResult nodes =
+                    Wearable.NodeApi.getConnectedNodes(mGoogleApiClient).await();
+            for (Node node : nodes.getNodes()) {
+                results.add(node.getId());
+            }
+            return results;
+        }
+
+        @Override
+        protected void onPostExecute(HashSet<String> nodeIds) {
+            mConnectedNodeIds = nodeIds;
+        }
+    }
+
+    private void exit() {
+        setResult(RESULT_OK);
+        finish();
     }
 }
