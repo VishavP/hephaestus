@@ -99,6 +99,8 @@ public class ActionServerProxyManager {
         Iterator<String> hosts = jHosts.keys();
         while (hosts.hasNext()) {
             String hostname;
+            String localNetworkSSID;
+            String localGatewayIPAddress;
             JSONObject details;
             String remoteIpAddress;
             String localIpAddress;
@@ -107,12 +109,19 @@ public class ActionServerProxyManager {
             try {
                 hostname = (String) hosts.next();
                 details = jHosts.getJSONObject(hostname);
+                localNetworkSSID = details.getString("local_network_ssid");
+                localGatewayIPAddress = details.getString("local_gateway_ip_address");
                 remoteIpAddress = details.getString("remote_ip_address");
                 localIpAddress = details.getString("local_ip_address");
                 port = details.getInt("port");
                 macAddress = details.getString("mac_address");
-                ActionServerProxy asp = new ActionServerProxy(hostname, remoteIpAddress,
-                        localIpAddress, port, macAddress);
+                ActionServerProxy asp = new ActionServerProxy(hostname,
+                                                              localNetworkSSID,
+                                                              localGatewayIPAddress,
+                                                              remoteIpAddress,
+                                                              localIpAddress,
+                                                              port,
+                                                              macAddress);
                 mActionServerProxies.add(asp);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -135,6 +144,19 @@ public class ActionServerProxyManager {
             }
         }
         return null;
+    }
+
+    public Action getAction(String name) {
+       for (Action a : mActions) {
+           if (a.getName().equals(name)) {
+               return a;
+           }
+       }
+       return null;
+    }
+
+    public ArrayList<ActionServerProxy> getActionServerProxies () {
+        return mActionServerProxies;
     }
 
     public ActionServerProxy getActionServerProxy(String hostname) {

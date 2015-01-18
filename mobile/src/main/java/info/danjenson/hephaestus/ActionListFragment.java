@@ -4,6 +4,9 @@ import android.app.AlertDialog;
 import android.app.ListFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -23,6 +26,7 @@ public class ActionListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         mActionServerProxyManager = ActionServerProxyManager.get(getActivity());
         mActions = mActionServerProxyManager.getActions();
         ActionAdapter adapter = new ActionAdapter(mActions);
@@ -55,6 +59,26 @@ public class ActionListFragment extends ListFragment {
             hostname = a.getAllowedHosts().get(0);
             AsyncPostRequest.sendPostRequest(getActivity(), hostname, a.getName());
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_actions, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+       switch (item.getItemId()) {
+           case R.id.refresh_actions:
+               ArrayList<ActionServerProxy> asps = mActionServerProxyManager.getActionServerProxies();
+               for (ActionServerProxy asp : asps) {
+                   AsyncPostRequest.sendPostRequest(getActivity(), asp.getHostName(), "refresh actions");
+               }
+               return true;
+           default:
+               return super.onOptionsItemSelected(item);
+       }
     }
 
     private class ActionAdapter extends ArrayAdapter<Action> {

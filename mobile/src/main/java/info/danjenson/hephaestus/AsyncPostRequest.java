@@ -1,9 +1,15 @@
 package info.danjenson.hephaestus;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.google.api.client.util.StringUtils;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -30,8 +36,15 @@ public class AsyncPostRequest extends AsyncTask<HttpPost, Void, String> {
     public static void sendPostRequest(Context appContext, final String hostname, final String actionName) {
         AsyncPostRequest request = new AsyncPostRequest(appContext);
         ActionServerProxy asp = ActionServerProxyManager.get(mAppContext).getActionServerProxy(hostname);
+        String currentSSID = getCurrentSSID(appContext);
+        String destinationIpAddress = null;
+        if (asp.getLocalNetworkSSID().equals(currentSSID)) {
+           destinationIpAddress = asp.getLocalIpAddress();
+        } else {
+            destinationIpAddress = asp.getRemoteIpAddress();
+        }
         try {
-            HttpPost httpPost = new HttpPost("http://" + asp.getRemoteIpAddress() + ':' + asp.getPort());
+            HttpPost httpPost = new HttpPost("http://" + destinationIpAddress + ':' + asp.getPort());
             String s = "<?xml version='1.0'?><methodCall><methodName>" + actionName + "</methodName></methodCall>";
             StringEntity se = new StringEntity(s, "UTF-8");
             se.setContentType("application/xml");
@@ -40,6 +53,21 @@ public class AsyncPostRequest extends AsyncTask<HttpPost, Void, String> {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+    }
+
+    protected static String getCurrentSSID(Context context) {
+        String ssid = null;
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        if (networkInfo.isConnected()) {
+            final WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            final WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+            if (wifiInfo != null && wifiInfo.getSSID() != null)  {
+                String quotedSSID = wifiInfo.getSSID();
+                ssid = quotedSSID.substring(1, quotedSSID.length() - 1);
+            }
+        }
+        return ssid;
     }
 
     @Override

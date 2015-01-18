@@ -1,0 +1,7 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/refresh_actions"
+        android:icon="@drawable/ic_menu_refresh"
+        android:title="@string/refresh_actions"
+        app:showAsAction="ifRoom" />
+</menu>

@@ -7,6 +7,8 @@ import android.util.Log;
  */
 public class ActionServerProxy {
     private String mHostName;
+    private String mLocalNetworkSSID;
+    private String mLocalGatewayIpAddress;
     private String mRemoteIpAddress;
     private String mLocalIpAddress;
     private int mPort;
@@ -15,6 +17,10 @@ public class ActionServerProxy {
     public String getHostName() {
         return mHostName;
     }
+
+    public String getLocalNetworkSSID() { return mLocalNetworkSSID; }
+
+    public String getLocalGatewayIpAddress() { return mLocalGatewayIpAddress; }
 
     public void setHostName(String hostName) {
         mHostName = hostName;
@@ -52,9 +58,11 @@ public class ActionServerProxy {
         mMacAddress = macAddress;
     }
 
-    public ActionServerProxy(String hostName, String remoteIpAddress, String localIpAddress,
-                             int port, String macAddress) {
+    public ActionServerProxy(String hostName, String localNetworkSSID, String localGatewayIpAddress,
+                             String remoteIpAddress, String localIpAddress, int port, String macAddress) {
         mHostName = hostName;
+        mLocalNetworkSSID =  localNetworkSSID;
+        mLocalGatewayIpAddress = localGatewayIpAddress;
         mRemoteIpAddress = remoteIpAddress;
         mLocalIpAddress = localIpAddress;
         mPort = port;

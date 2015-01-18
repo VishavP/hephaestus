@@ -24,13 +24,14 @@ public class VoiceActionService extends WearableListenerService {
         String message = null;
         try {
             message = new String(messageEvent.getData(), "UTF-8");
-            Log.d("MESSAGE", message);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        // TODO: fix by sending message back if need be to resolve
-        String hostname = "Daniels-Mac-mini";
-        AsyncPostRequest.sendPostRequest(this, hostname, message);
+        Action a = sActionServerProxyManager.getAction(message);
+        if (a != null) {
+            // TODO: fix this so user can resolve from wear
+            AsyncPostRequest.sendPostRequest(this, a.getAllowedHosts().get(0), a.getName());
+        }
     }
 
     @Override

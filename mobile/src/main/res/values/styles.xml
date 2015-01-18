@@ -1,9 +1,8 @@
 <resources>
 
-    <!-- Base application theme. -->
+<!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat">
         <!-- Customize your theme here. -->
-        <item name="android:textColor">#D4A017</item>
-    </style>
+        </style>
 
 </resources>

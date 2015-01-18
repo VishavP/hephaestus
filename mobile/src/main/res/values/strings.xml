@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Hephaestus</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="refresh_actions">Refresh</string>
     <string name="action_settings">Settings</string>
 
 </resources>
