@@ -30,6 +30,7 @@ public class VoiceAction extends Activity {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
                 .build();
+        mGoogleApiClient.connect();
         mConnectedNodeIds = new HashSet<String>();
         new NodeManager().execute();
         startVoiceAction();
@@ -50,15 +51,12 @@ public class VoiceAction extends Activity {
             if (exitWords.contains(spokenText)) {
                 exit();
             } else if (mConnectedNodeIds.size() > 0) {
-                for (String nodeId : mConnectedNodeIds) {
-                    MessageApi.SendMessageResult result = Wearable.MessageApi.sendMessage(
-                            mGoogleApiClient, nodeId, spokenText, null).await();
-                    if (!result.getStatus().isSuccess()) {
-                        Log.e("ERROR", "Failed to send message!");
-                    }
-                    Toast toast = Toast.makeText(this, spokenText, Toast.LENGTH_SHORT);
-                    toast.show();
+                new MessageSender().execute(spokenText);
+                try {
+                    Thread.sleep(1000);
                     startVoiceAction();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             } else {
                 Toast toast = Toast.makeText(this, "No connected nodes!", Toast.LENGTH_SHORT);
@@ -88,7 +86,32 @@ public class VoiceAction extends Activity {
         }
     }
 
+    private class MessageSender extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String...messages) {
+            for (String message : messages) {
+                for (String nodeId : mConnectedNodeIds) {
+                    MessageApi.SendMessageResult result = Wearable.MessageApi.sendMessage(
+                            mGoogleApiClient, nodeId, "/wear", message.getBytes()).await();
+                    if (!result.getStatus().isSuccess()) {
+                        Log.e("ERROR", "Failed to send message!");
+                    } else {
+                        return message;
+                    }
+                }
+            }
+        return "Failed!";
+        }
+
+        @Override
+        protected void onPostExecute(String message) {
+            Toast toast = Toast.makeText(VoiceAction.this, message, Toast.LENGTH_SHORT);
+            toast.show();
+        }
+    }
+
     private void exit() {
+        mGoogleApiClient = null;
         setResult(RESULT_OK);
         finish();
     }

@@ -47,13 +47,13 @@ public class ActionListFragment extends ListFragment {
             builder.setItems(options, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    AsyncPostRequest.sendPostRequest(options[which], a.getName());
+                    AsyncPostRequest.sendPostRequest(getActivity(), options[which], a.getName());
                 }
             });
             builder.show();
         } else {
             hostname = a.getAllowedHosts().get(0);
-            AsyncPostRequest.sendPostRequest(hostname, a.getName());
+            AsyncPostRequest.sendPostRequest(getActivity(), hostname, a.getName());
         }
     }
 

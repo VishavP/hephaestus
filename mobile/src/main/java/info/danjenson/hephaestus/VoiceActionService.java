@@ -1,5 +1,7 @@
 package info.danjenson.hephaestus;
 
+import android.util.Log;
+
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.WearableListenerService;
 
@@ -13,6 +15,7 @@ public class VoiceActionService extends WearableListenerService {
 
     @Override
     public void onCreate() {
+        super.onCreate();
         sActionServerProxyManager = ActionServerProxyManager.get(this);
     }
 
@@ -21,11 +24,17 @@ public class VoiceActionService extends WearableListenerService {
         String message = null;
         try {
             message = new String(messageEvent.getData(), "UTF-8");
+            Log.d("MESSAGE", message);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         // TODO: fix by sending message back if need be to resolve
         String hostname = "Daniels-Mac-mini";
-        AsyncPostRequest.sendPostRequest(hostname, message);
+        AsyncPostRequest.sendPostRequest(this, hostname, message);
+    }
+
+    @Override
+    public void onDestroy() {
+        sActionServerProxyManager = null;
     }
 }

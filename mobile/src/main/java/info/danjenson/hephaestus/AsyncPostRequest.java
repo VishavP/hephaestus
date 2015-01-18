@@ -2,6 +2,7 @@ package info.danjenson.hephaestus;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
@@ -26,7 +27,8 @@ public class AsyncPostRequest extends AsyncTask<HttpPost, Void, String> {
         mAppContext = appContext;
     }
 
-    public static void sendPostRequest(final String hostname, final String actionName) {
+    public static void sendPostRequest(Context appContext, final String hostname, final String actionName) {
+        AsyncPostRequest request = new AsyncPostRequest(appContext);
         ActionServerProxy asp = ActionServerProxyManager.get(mAppContext).getActionServerProxy(hostname);
         try {
             HttpPost httpPost = new HttpPost("http://" + asp.getRemoteIpAddress() + ':' + asp.getPort());
@@ -54,6 +56,7 @@ public class AsyncPostRequest extends AsyncTask<HttpPost, Void, String> {
         return null;
     }
 
+    @Override
     protected void onPostExecute(String result) {
         Toast toast = Toast.makeText(mAppContext, result, Toast.LENGTH_SHORT);
         toast.show();

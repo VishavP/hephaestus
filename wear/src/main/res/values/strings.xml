@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Hephaestus</string>
-    <string name="app_short_name">H</string>
+    <string name="app_name">Zeus</string>
     <string name="test">test</string>
 
 </resources>

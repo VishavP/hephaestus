@@ -40,7 +40,6 @@ public class Action {
         mName = name;
         mCommand = command;
         mAllowedHosts = allowedHosts;
-        Log.d("ACTION", this.toString());
     }
 
     public String toString() {
