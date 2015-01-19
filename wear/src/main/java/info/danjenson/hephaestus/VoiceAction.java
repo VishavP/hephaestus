@@ -36,6 +36,12 @@ public class VoiceAction extends Activity {
         startVoiceAction();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        exit();
+    }
+
     private void startVoiceAction() {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
