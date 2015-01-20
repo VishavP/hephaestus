@@ -3,7 +3,9 @@ package info.danjenson.hephaestus;
 import android.app.AlertDialog;
 import android.app.ListFragment;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,23 +22,40 @@ import java.util.Comparator;
  * Created by danj on 1/12/15.
  */
 public class ActionListFragment extends ListFragment {
-    private ArrayList<Action> mActions;
     private ActionServerProxyManager mActionServerProxyManager;
+    private ArrayList<Action> mActions;
+    private ActionAdapter mAdapter;
+    private DriveConnection mDriveConnection;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        mDriveConnection = DriveConnection.get(getActivity());
         mActionServerProxyManager = ActionServerProxyManager.get(getActivity());
         mActions = mActionServerProxyManager.getActions();
-        ActionAdapter adapter = new ActionAdapter(mActions);
-        adapter.sort(new Comparator<Action>() {
+        mAdapter = new ActionAdapter(mActions);
+        mAdapter.sort(new Comparator<Action>() {
             @Override
             public int compare(Action a1, Action a2) {
                 return a1.compareTo(a2);
             }
         });
-        setListAdapter(adapter);
+        setListAdapter(mAdapter);
+    }
+
+    public void update() {
+        ActionServerProxyManager.update(getActivity());
+        mActionServerProxyManager = ActionServerProxyManager.get(getActivity());
+        mActions.clear();
+        mActions.addAll(mActionServerProxyManager.getActions());
+        mAdapter.notifyDataSetChanged();
+        mAdapter.sort(new Comparator<Action>() {
+            @Override
+            public int compare(Action a1, Action a2) {
+                return a1.compareTo(a2);
+            }
+        });
     }
 
     @Override
@@ -75,6 +94,7 @@ public class ActionListFragment extends ListFragment {
                for (ActionServerProxy asp : asps) {
                    AsyncPostRequest.sendPostRequest(getActivity(), asp.getHostName(), "refresh actions");
                }
+               mDriveConnection.download(ActionServerProxyManager.RPC_CONFIG_FILENAME, mActionServerProxyManager.getRpcConfigFile());
                return true;
            default:
                return super.onOptionsItemSelected(item);

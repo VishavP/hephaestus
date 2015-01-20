@@ -2,6 +2,7 @@ package info.danjenson.hephaestus;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -12,6 +13,7 @@ import android.view.MenuInflater;
  */
 public abstract class SingleFragmentActivity extends ActionBarActivity {
     protected abstract Fragment createFragment();
+    protected abstract String getTag();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -22,8 +24,9 @@ public abstract class SingleFragmentActivity extends ActionBarActivity {
 
         if (fragment == null) {
             fragment = createFragment();
+            String fragmentTag = getTag();
             fm.beginTransaction()
-                    .add(R.id.fragmentContainer, fragment)
+                    .add(R.id.fragmentContainer, fragment, fragmentTag)
                     .commit();
         }
     }

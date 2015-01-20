@@ -20,12 +20,14 @@ import java.util.Iterator;
 public class ActionServerProxyManager {
     private ArrayList<Action> mActions;
     private ArrayList<ActionServerProxy> mActionServerProxies;
-    private static ActionServerProxyManager sActionServerProxyManager;
     private Context mAppContext;
-    private static final String mRpcConfig = "rpc_config.json";
+    private static ActionServerProxyManager sActionServerProxyManager;
+    private static File sRpcConfigFile;
+    public static final String RPC_CONFIG_FILENAME = "rpc_config.json";
 
     private ActionServerProxyManager(Context appContext) {
         mAppContext = appContext;
+        sRpcConfigFile = new File(appContext.getExternalFilesDir(null), RPC_CONFIG_FILENAME);
         JSONObject jObject = getConfig(appContext);
         initializeActions(jObject);
         initializeActionServerProxies(jObject);
@@ -35,10 +37,9 @@ public class ActionServerProxyManager {
         JSONObject jObject = null;
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state)) {
-            File config = new File(appContext.getExternalFilesDir(null), mRpcConfig);
             StringBuilder text = new StringBuilder();
             try {
-                BufferedReader br = new BufferedReader(new FileReader(config));
+                BufferedReader br = new BufferedReader(new FileReader(sRpcConfigFile));
                 String line;
                 while ((line = br.readLine()) != null) {
                     text.append(line);
@@ -134,6 +135,14 @@ public class ActionServerProxyManager {
            sActionServerProxyManager = new ActionServerProxyManager(c.getApplicationContext());
        }
        return sActionServerProxyManager;
+    }
+
+    public static void update(Context c) {
+        sActionServerProxyManager = new ActionServerProxyManager(c.getApplicationContext());
+    }
+
+    public File getRpcConfigFile() {
+        return sRpcConfigFile;
     }
 
     public ArrayList<Action> getActions() { return mActions; }

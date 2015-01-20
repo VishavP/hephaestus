@@ -5,6 +5,7 @@
     <TextView
         android:id="@+id/action_list_item_nameTextView"
         android:textSize="25sp"
+        android:fontFamily="sans-serif-light"
         android:padding="20dp"
         android:layout_centerVertical="true"
         android:layout_width="match_parent"
